@@ -1,126 +1,301 @@
 body {
-    font-family: 'Nunito', sans-serif;
-    margin: 0; /* Eliminar márgenes predeterminados del body */
-    background-color: #f7f7f7; /* Un gris muy claro como fondo */
-    color: #444;
+    font-family: 'Caveat', cursive, sans-serif;
+    background-color: #ffe8e8; /* Rosa pálido de fresa */
+    margin: 0;
     display: flex;
-    flex-direction: column;
-    align-items: center; /* Centrar horizontalmente los elementos hijos */
-    justify-content: flex-start; /* Alinea los elementos al inicio verticalmente */
-    min-height: 100vh; /* Asegura que el body ocupe al menos toda la altura de la ventana */
-    padding: 20px; /* Añade un poco de espacio alrededor del contenido */
+    justify-content: center;
+    align-items: flex-start; /* Alinear al inicio verticalmente */
+    min-height: 100vh;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    color: #333;
+    position: relative;
+    overflow: hidden;
 }
 
-h1, h2 {
-    color: #3f51b5;
+/* Puntos de fondo */
+.background-dots {
+    content: '';
+    position: fixed; /* Fixed para que no se mueva con el scroll */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#ffc0cb 1px, transparent 1px); /* Rosa más oscuro para los puntos */
+    background-size: 15px 15px;
+    opacity: 0.4;
+    z-index: -1;
+}
+
+.main-container {
+    background-color: #fff; /* Fondo blanco principal */
+    border: 3px solid #f08080; /* Borde rojo fresa */
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 800px;
     text-align: center;
-    margin-bottom: 30px;
+    position: relative; /* Para z-index sobre los puntos */
+    z-index: 1; /* Asegura que el contenido esté por encima de los puntos */
 }
 
-.agregar-libro, .referencias-libros {
-    background-color: #fff;
+h1 {
+    color: #e91e63; /* Rojo fresa vibrante para el título principal */
+    font-size: 3.5em;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+h2 {
+    color: #ff69b4; /* Rosa más suave para los subtítulos */
+    font-size: 2em;
+    margin-bottom: 25px;
+    border-bottom: 2px dashed #ffc0cb; /* Línea punteada de fresa */
+    padding-bottom: 10px;
+    display: inline-block; /* Para que la línea se ajuste al texto */
+}
+
+/* Sección de Añadir Libro */
+.agregar-libro-section {
+    background-color: #fffafa; /* Fondo ligeramente rosado */
+    border: 2px dashed #ffb6c1; /* Borde punteado como papel de nota */
+    border-radius: 15px;
     padding: 30px;
-    margin-bottom: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    width: 80%; /* Ajustar el ancho para pantallas más grandes */
-    max-width: 700px; /* Establecer un ancho máximo para evitar que se extienda demasiado */
+    margin-bottom: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: left;
 }
 
-/* El resto del CSS puede permanecer igual */
-.agregar-libro label {
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #555;
+    color: #e91e63; /* Rosa oscuro para las etiquetas */
+    font-size: 1.2em;
 }
 
-.agregar-libro input[type="text"],
-.agregar-libro input[type="file"],
-.agregar-libro textarea {
-    width: calc(100% - 16px);
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-family: inherit;
-    font-size: 1em;
-}
-
-.agregar-libro textarea {
-    min-height: 100px;
-}
-
-.agregar-libro button[type="submit"] {
-    background-color: #4caf50;
-    color: white;
-    padding: 12px 20px;
-    border: none;
+.form-group input[type="text"],
+.form-group textarea {
+    width: calc(100% - 24px); /* Ajuste por padding y borde */
+    padding: 12px;
+    border: 1px solid #ffc0cb;
     border-radius: 8px;
-    cursor: pointer;
+    font-family: 'Caveat', cursive, sans-serif;
     font-size: 1.1em;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #555;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
 }
 
-.agregar-libro button[type="submit"]:hover {
-    background-color: #45a049;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    border-color: #e91e63;
+    outline: none;
+    box-shadow: 0 0 5px rgba(233, 30, 99, 0.3);
 }
 
-.calificacion {
-    display: inline-block;
-    font-size: 2em;
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+    font-size: 0.9em;
+}
+
+/* Estrellas de Calificación */
+.estrellas-calificacion {
+    font-size: 2.5em; /* Tamaño de las estrellas */
     cursor: pointer;
-    margin-bottom: 15px;
+    letter-spacing: -2px; /* Juntar un poco las estrellas */
+    display: inline-block; /* Para centrar */
 }
 
-.estrella {
-    color: #ccc;
-    transition: color 0.2s ease;
+.estrellas-calificacion .estrella {
+    color: #ccc; /* Gris para las estrellas no resaltadas */
+    transition: color 0.2s ease, transform 0.1s ease;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-.estrella.resaltada,
-.calificacion-mostrada {
-    color: #ffc107; /* Un amarillo dorado más vivo */
+.estrellas-calificacion .estrella.resaltada {
+    color: #ffc107; /* Amarillo dorado para las estrellas resaltadas */
+    transform: scale(1.1); /* Efecto de crecimiento al resaltar */
+}
+
+.estrellas-calificacion .estrella:hover {
+    transform: scale(1.2); /* Efecto al pasar el ratón */
+}
+
+/* Botón de Enviar */
+.submit-btn {
+    background-color: #ff69b4; /* Rosa chicle para el botón */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Caveat', cursive, sans-serif;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: block; /* Ocupar todo el ancho disponible */
+    width: 100%;
+    max-width: 300px; /* Ancho máximo para el botón */
+    margin: 30px auto 0 auto; /* Centrar y margen superior */
+}
+
+.submit-btn:hover {
+    background-color: #e91e63; /* Rosa más oscuro al pasar el ratón */
+    transform: translateY(-3px);
+}
+
+/* Sección de Referencias de Libros */
+.referencias-libros-section {
+    background-color: #fffafa; /* Fondo ligeramente rosado */
+    border: 2px dashed #ffb6c1;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    text-align: left;
+}
+
+#lista-referencias {
+    display: grid;
+    gap: 30px; /* Espacio entre cada referencia de libro */
+}
+
+.no-books-message {
+    text-align: center;
+    color: #888;
+    font-size: 1.2em;
+    padding: 20px;
+    background-color: #fff0f5;
+    border-radius: 10px;
+    border: 1px dashed #ffc0cb;
 }
 
 .referencia-libro {
-    border: 1px solid #eee;
-    padding: 20px;
-    margin-bottom: 20px;
+    background-color: #fff; /* Fondo blanco para cada tarjeta de libro */
+    border: 2px solid #ffb6c1; /* Borde rosa suave */
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex; /* Para organizar imagen y texto lado a lado */
+    gap: 25px;
+    align-items: flex-start; /* Alinear arriba si la imagen es más corta */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative; /* Para el botón eliminar */
+}
+
+.referencia-libro:hover {
+    transform: translateY(-5px); /* Efecto de elevación al pasar el ratón */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.libro-imagen-container {
+    flex-shrink: 0; /* Para que la imagen no se encoja */
+    width: 120px; /* Ancho fijo para la imagen */
+    height: 180px; /* Altura fija para la imagen */
+    overflow: hidden; /* Ocultar partes de la imagen si sobresalen */
     border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex; /* Para centrar la imagen dentro del contenedor */
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f7f7; /* Color de fondo si la imagen no llena */
+}
+
+.libro-imagen-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Recortar la imagen para que llene el contenedor */
+    display: block; /* Eliminar espacio extra debajo de la imagen */
+}
+
+.libro-imagen-placeholder {
+    width: 100%;
+    height: 100%;
     display: flex;
-    gap: 20px;
-    align-items: center; /* Centrar verticalmente la imagen y el texto */
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    color: #ccc;
+    background-color: #f0f0f0;
+    border-radius: 10px;
 }
 
-.referencia-libro img {
-    max-width: 120px;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+.libro-info {
+    flex-grow: 1; /* Para que el texto ocupe el espacio restante */
 }
 
-.referencia-libro-info {
-    flex-grow: 1;
-}
-
-.referencia-libro h3 {
-    color: #3f51b5;
+.libro-info h3 {
+    color: #e91e63;
+    font-size: 1.8em;
     margin-top: 0;
     margin-bottom: 8px;
+    line-height: 1.2;
 }
 
-.referencia-libro p {
-    color: #777;
-    margin-bottom: 6px;
+.libro-autor {
+    color: #555;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.libro-referencia {
+    font-size: 1.15em;
+    color: #666;
     line-height: 1.6;
+    font-style: italic;
+    margin-bottom: 15px;
 }
 
-.referencia-libro .calificacion-mostrada {
-    font-size: 1.5em;
+/* Calificación mostrada */
+.calificacion-mostrada {
+    font-size: 1.8em; /* Tamaño de las estrellas en la lista */
+    color: #ffc107; /* Amarillo para las estrellas */
+    letter-spacing: -2px;
+    margin-top: 10px;
+    display: block; /* Para que ocupe su propia línea */
+}
+
+/* Botón de Eliminar Libro */
+.eliminar-libro-btn {
+    background-color: #f44336; /* Rojo para eliminar */
+    color: white;
+    border: none;
+    border-radius: 50%; /* Botón redondo */
+    width: 35px;
+    height: 35px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    position: absolute; /* Posicionamiento absoluto */
+    top: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* Para que esté por encima de la tarjeta */
+}
+
+.eliminar-libro-btn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.1);
+}
+
+/* Material Icons para el placeholder */
+.libro-imagen-placeholder::before {
+    font-family: 'Material Icons';
+    content: 'image'; /* Puedes cambiar el icono si quieres */
+    font-size: 3em;
+    color: #ccc;
 }

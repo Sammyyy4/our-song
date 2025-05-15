@@ -3,36 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notas Post-it</title>
+    <title>Mis Notas Rosadas</title>
     <link rel="stylesheet" href="notas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Mis Notas</h1>
-    <div class="contenedor-notas">
+    <div class="notes-container">
+        <h1>‧₊˚❀༉‧₊˚.</h1>
+
+        <div class="note-input-section">
+            <input type="text" id="note-title-input" placeholder="Título de la nota (opcional)">
+            <textarea id="note-text-input" placeholder="Escribe tu nota aquí..."></textarea>
+            <button id="add-note-btn">Agregar Nota</button>
         </div>
-    <button id="agregar-nota">Agregar Nueva Nota</button>
+
+        <div class="notes-list" id="notes-list">
+            </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const agregarNotaBtn = document.getElementById('agregar-nota');
-            const contenedorNotas = document.querySelector('.contenedor-notas');
+            const noteTitleInput = document.getElementById('note-title-input');
+            const noteTextInput = document.getElementById('note-text-input');
+            const addNoteBtn = document.getElementById('add-note-btn');
+            const notesList = document.getElementById('notes-list');
 
-            agregarNotaBtn.addEventListener('click', crearNuevaNota);
+            // Cargar notas al iniciar
+            loadNotes();
 
-            function crearNuevaNota() {
-                const nuevaNota = document.createElement('div');
-                nuevaNota.classList.add('nota');
+            addNoteBtn.addEventListener('click', addNote);
 
-                const tituloNota = document.createElement('div');
-                tituloNota.classList.add('titulo-nota');
-                tituloNota.textContent = 'Nueva Nota';
+            function addNote() {
+                const title = noteTitleInput.value.trim();
+                const text = noteTextInput.value.trim();
 
-                const textArea = document.createElement('textarea');
-                textArea.placeholder = 'Escribe tu nota aquí...';
+                if (text === '') {
+                    alert('¡La nota no puede estar vacía!');
+                    return;
+                }
 
-                nuevaNota.appendChild(tituloNota);
-                nuevaNota.appendChild(textArea);
-                contenedorNotas.appendChild(nuevaNota);
+                const note = {
+                    id: Date.now(), // Un ID único para cada nota
+                    title: title,
+                    text: text,
+                    date: new Date().toLocaleString()
+                };
+
+                saveNote(note);
+                displayNote(note);
+
+                noteTitleInput.value = '';
+                noteTextInput.value = '';
+            }
+
+            function displayNote(note) {
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note-item');
+                noteElement.dataset.id = note.id;
+
+                noteElement.innerHTML = `
+                    <div class="note-header">
+                        <h3>${note.title || 'Nota sin título'}</h3>
+                        <span class="note-date">${note.date}</span>
+                        <button class="delete-note-btn">X</button>
+                    </div>
+                    <p>${note.text}</p>
+                `;
+
+                notesList.prepend(noteElement); // Añadir al principio
+
+                // Evento para eliminar nota
+                noteElement.querySelector('.delete-note-btn').addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de que quieres eliminar esta nota?')) {
+                        noteElement.remove();
+                        deleteNote(note.id);
+                    }
+                });
+            }
+
+            function saveNote(note) {
+                let notes = JSON.parse(localStorage.getItem('notes')) || [];
+                notes.push(note);
+                localStorage.setItem('notes', JSON.stringify(notes));
+            }
+
+            function loadNotes() {
+                let notes = JSON.parse(localStorage.getItem('notes')) || [];
+                notes.sort((a, b) => b.id - a.id); // Ordenar por más reciente primero
+                notes.forEach(note => displayNote(note));
+            }
+
+            function deleteNote(id) {
+                let notes = JSON.parse(localStorage.getItem('notes')) || [];
+                notes = notes.filter(note => note.id !== id);
+                localStorage.setItem('notes', JSON.stringify(notes));
             }
         });
     </script>

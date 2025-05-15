@@ -3,153 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Referencias de Libros</title>
+    <title>Mis libros Favoritos</title>
     <link rel="stylesheet" href="libro.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <h1>📚 Mis Referencias de Libros 📚</h1>
+    <div class="main-container">
+        <div class="background-dots"></div>
 
-    <div class="agregar-libro">
-        <h2>Añadir un Nuevo Libro</h2>
-        <form id="formulario-libro">
-            <div>
-                <label for="titulo">Título:</label>
-                <input type="text" id="titulo" required>
-            </div>
-            <div>
-                <label for="autor">Autor:</label>
-                <input type="text" id="autor">
-            </div>
-            <div>
-                <label for="imagen">Portada:</label>
-                <input type="file" id="imagen" accept="image/*">
-            </div>
-            <div>
-                <label for="estrellas">Calificación:</label>
-                <div class="calificacion">
-                    <span class="estrella" data-valor="1">☆</span>
-                    <span class="estrella" data-valor="2">☆</span>
-                    <span class="estrella" data-valor="3">☆</span>
-                    <span class="estrella" data-valor="4">☆</span>
-                    <span class="estrella" data-valor="5">☆</span>
-                    <input type="hidden" id="calificacion-valor" value="0">
+        <h1>🍓 Mis Referencias de Libros 🍓</h1>
+
+        <div class="agregar-libro-section">
+            <h2>Añadir Nuevo Libro</h2>
+            <form id="form-agregar-libro">
+                <div class="form-group">
+                    <label for="titulo">Título del Libro:</label>
+                    <input type="text" id="titulo" required placeholder="Ej: La telaraña de Carlota">
                 </div>
-            </div>
-            <div>
-                <label for="comentarios">Comentarios:</label>
-                <textarea id="comentarios" rows="4"></textarea>
-            </div>
-            <button type="submit">Guardar Referencia</button>
-        </form>
-    </div>
+                <div class="form-group">
+                    <label for="autor">Autor:</label>
+                    <input type="text" id="autor" required placeholder="Ej: E.B. White">
+                </div>
+                <div class="form-group">
+                    <label for="imagen-url">URL de la Imagen de Portada:</label>
+                    <input type="text" id="imagen-url" placeholder="Ej: https://ejemplo.com/portada.jpg">
+                    <small>Opcional: URL directa de una imagen (JPEG, PNG, GIF)</small>
+                </div>
+                <div class="form-group">
+                    <label for="referencia-texto">Tu Referencia/Reseña:</label>
+                    <textarea id="referencia-texto" rows="5" required placeholder="Qué te pareció el libro, por qué lo recomiendas..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Calificación:</label>
+                    <div class="estrellas-calificacion" data-calificacion="0">
+                        <span class="estrella" data-value="1">★</span>
+                        <span class="estrella" data-value="2">★</span>
+                        <span class="estrella" data-value="3">★</span>
+                        <span class="estrella" data-value="4">★</span>
+                        <span class="estrella" data-value="5">★</span>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Añadir Libro</button>
+            </form>
+        </div>
 
-    <div class="referencias-libros">
-        <h2>Mis Libros Referenciados</h2>
-        <div id="lista-referencias">
+        <div class="referencias-libros-section">
+            <h2>Mi Colección de Referencias</h2>
+            <div id="lista-referencias">
+                <p class="no-books-message" id="no-books-message">¡Aún no has añadido ningún libro! Sé el primero en dejar una referencia.</p>
             </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const formularioLibro = document.getElementById('formulario-libro');
+            const formAgregarLibro = document.getElementById('form-agregar-libro');
             const listaReferencias = document.getElementById('lista-referencias');
-            const estrellas = document.querySelectorAll('.estrella');
-            const calificacionValorInput = document.getElementById('calificacion-valor');
-            let librosReferenciados = cargarLibros();
+            const noBooksMessage = document.getElementById('no-books-message');
 
-            mostrarReferencias();
+            let libros = JSON.parse(localStorage.getItem('librosReferenciasFresa')) || [];
 
-            formularioLibro.addEventListener('submit', function(event) {
-                event.preventDefault();
+            // --- Funcionalidad de Estrellas ---
+            const estrellasCalificacion = document.querySelector('.estrellas-calificacion');
+            let calificacionSeleccionada = 0;
+
+            estrellasCalificacion.addEventListener('click', function(e) {
+                if (e.target.classList.contains('estrella')) {
+                    calificacionSeleccionada = parseInt(e.target.dataset.value);
+                    resaltarEstrellas(calificacionSeleccionada);
+                }
+            });
+
+            estrellasCalificacion.addEventListener('mouseover', function(e) {
+                if (e.target.classList.contains('estrella')) {
+                    const value = parseInt(e.target.dataset.value);
+                    resaltarEstrellas(value);
+                }
+            });
+
+            estrellasCalificacion.addEventListener('mouseout', function() {
+                resaltarEstrellas(calificacionSeleccionada); // Volver a la calificación seleccionada
+            });
+
+            function resaltarEstrellas(calificacion) {
+                const estrellas = estrellasCalificacion.querySelectorAll('.estrella');
+                estrellas.forEach(estrella => {
+                    if (parseInt(estrella.dataset.value) <= calificacion) {
+                        estrella.classList.add('resaltada');
+                    } else {
+                        estrella.classList.remove('resaltada');
+                    }
+                });
+            }
+
+            // --- Funcionalidad de Añadir Libro ---
+            formAgregarLibro.addEventListener('submit', function(e) {
+                e.preventDefault();
+
                 const titulo = document.getElementById('titulo').value;
                 const autor = document.getElementById('autor').value;
-                const imagenInput = document.getElementById('imagen');
-                const calificacion = parseInt(calificacionValorInput.value);
-                const comentarios = document.getElementById('comentarios').value;
-                const imagenArchivo = imagenInput.files[0];
+                const imagenUrl = document.getElementById('imagen-url').value;
+                const referenciaTexto = document.getElementById('referencia-texto').value;
 
-                if (titulo) {
-                    let nuevaReferencia = { titulo: titulo, autor: autor, calificacion: calificacion, comentarios: comentarios };
-                    if (imagenArchivo) {
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                            nuevaReferencia.imagenBase64 = reader.result;
-                            librosReferenciados.push(nuevaReferencia);
-                            guardarLibros();
-                            mostrarReferencias();
-                            formularioLibro.reset();
-                            resetearEstrellas();
-                        }
-                        reader.readAsDataURL(imagenArchivo);
-                    } else {
-                        librosReferenciados.push(nuevaReferencia);
-                        guardarLibros();
-                        mostrarReferencias();
-                        formularioLibro.reset();
-                        resetearEstrellas();
-                    }
-                } else {
-                    alert('El título del libro es obligatorio.');
-                }
-            });
-
-            estrellas.forEach(estrella => {
-                estrella.addEventListener('click', function() {
-                    const valor = parseInt(this.dataset.valor);
-                    calificacionValorInput.value = valor;
-                    resaltarEstrellas(valor);
-                });
-                estrella.addEventListener('mouseover', function() {
-                    resaltarEstrellas(parseInt(this.dataset.valor));
-                });
-                estrella.addEventListener('mouseout', function() {
-                    resaltarEstrellas(parseInt(calificacionValorInput.value));
-                });
-            });
-
-            function resaltarEstrellas(valor) {
-                estrellas.forEach(estrella => {
-                    estrella.textContent = parseInt(estrella.dataset.valor) <= valor ? '★' : '☆';
-                });
-            }
-
-            function mostrarReferencias() {
-                listaReferencias.innerHTML = '';
-                if (librosReferenciados.length === 0) {
-                    listaReferencias.innerHTML = '<p>Aún no has añadido ninguna referencia de libro.</p>';
+                if (calificacionSeleccionada === 0) {
+                    alert('Por favor, selecciona una calificación con estrellas.');
                     return;
                 }
-                librosReferenciados.forEach(libro => {
-                    const referenciaDiv = document.createElement('div');
-                    referenciaDiv.classList.add('referencia-libro');
-                    let estrellasHTML = '';
-                    for (let i = 1; i <= 5; i++) {
-                        estrellasHTML += i <= libro.calificacion ? '★' : '☆';
-                    }
-                    referenciaDiv.innerHTML = `
+
+                const nuevoLibro = {
+                    id: Date.now(), // ID único para la nota
+                    titulo: titulo,
+                    autor: autor,
+                    imagenUrl: imagenUrl,
+                    referencia: referenciaTexto,
+                    calificacion: calificacionSeleccionada
+                };
+
+                libros.push(nuevoLibro);
+                localStorage.setItem('librosReferenciasFresa', JSON.stringify(libros));
+                mostrarLibroEnLista(nuevoLibro);
+                formAgregarLibro.reset(); // Limpiar formulario
+                calificacionSeleccionada = 0; // Resetear calificación
+                resaltarEstrellas(0); // Quitar el resaltado de las estrellas
+                actualizarMensajeNoLibros();
+            });
+
+            // --- Funcionalidad de Mostrar Libros ---
+            function mostrarLibroEnLista(libro) {
+                const libroDiv = document.createElement('div');
+                libroDiv.classList.add('referencia-libro');
+                libroDiv.dataset.id = libro.id;
+
+                const estrellasHtml = '<div class="calificacion-mostrada">' +
+                    Array(libro.calificacion).fill('★').join('') +
+                    Array(5 - libro.calificacion).fill('☆').join('') +
+                    '</div>';
+
+                libroDiv.innerHTML = `
+                    ${libro.imagenUrl ? `<div class="libro-imagen-container"><img src="${libro.imagenUrl}" alt="Portada de ${libro.titulo}"></div>` : '<div class="libro-imagen-placeholder">🖼️ No hay imagen</div>'}
+                    <div class="libro-info">
                         <h3>${libro.titulo}</h3>
-                        ${libro.autor ? `<p>Autor: ${libro.autor}</p>` : ''}
-                        ${libro.imagenBase64 ? `<img src="${libro.imagenBase64}" alt="Portada de ${libro.titulo}" style="max-width: 150px; height: auto;">` : ''}
-                        <p>Calificación: <span class="calificacion-mostrada">${estrellasHTML}</span></p>
-                        ${libro.comentarios ? `<p>Comentarios: ${libro.comentarios}</p>` : ''}
-                    `;
-                    listaReferencias.appendChild(referenciaDiv);
+                        <p class="libro-autor"><strong>Autor:</strong> ${libro.autor}</p>
+                        <p class="libro-referencia">"${libro.referencia}"</p>
+                        ${estrellasHtml}
+                        <button class="eliminar-libro-btn">Eliminar</button>
+                    </div>
+                `;
+                listaReferencias.prepend(libroDiv); // Añadir al principio
+
+                // Evento para eliminar libro
+                libroDiv.querySelector('.eliminar-libro-btn').addEventListener('click', function() {
+                    if (confirm(`¿Estás seguro de que quieres eliminar la referencia de "${libro.titulo}"?`)) {
+                        libros = libros.filter(l => l.id !== libro.id);
+                        localStorage.setItem('librosReferenciasFresa', JSON.stringify(libros));
+                        libroDiv.remove();
+                        actualizarMensajeNoLibros();
+                    }
                 });
             }
 
-            function guardarLibros() {
-                localStorage.setItem('librosReferenciados', JSON.stringify(librosReferenciados));
+            function cargarLibrosGuardados() {
+                libros.forEach(libro => mostrarLibroEnLista(libro));
+                actualizarMensajeNoLibros();
             }
 
-            function cargarLibros() {
-                const librosGuardados = localStorage.getItem('librosReferenciados');
-                return librosGuardados ? JSON.parse(librosGuardados) : [];
+            function actualizarMensajeNoLibros() {
+                if (libros.length === 0) {
+                    noBooksMessage.style.display = 'block';
+                } else {
+                    noBooksMessage.style.display = 'none';
+                }
             }
 
-            function resetearEstrellas() {
-                calificacionValorInput.value = 0;
-                resaltarEstrellas(0);
-            }
+            cargarLibrosGuardados(); // Cargar libros al cargar la página
         });
     </script>
 </body>
