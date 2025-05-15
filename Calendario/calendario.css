@@ -1,15 +1,15 @@
 body {
-    font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif; /* Fuente divertida pero legible */
+    font-family: 'Caveat', cursive, sans-serif; /* Usando Caveat, si no, usa Comic Sans MS */
     background-color: #ffe8e8; /* Rosa pálido de fresa */
     margin: 0;
     display: flex;
-    flex-direction: column; /* Para organizar el título, calendario y notas */
-    align-items: center; /* Centrar horizontalmente */
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
     padding: 30px 20px;
-    box-sizing: border-box; /* Incluir padding en el ancho/alto */
-    position: relative; /* Para los puntos de fondo */
-    overflow: hidden; /* Para que las fresas no sobresalgan demasiado si se ajustan */
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
 }
 
 /* Puntos de fondo */
@@ -20,21 +20,21 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: radial-gradient(#ffc0cb 1px, transparent 1px); /* Rosa más oscuro */
-    background-size: 15px 15px; /* Tamaño de los puntos y espacio */
+    background-image: radial-gradient(#ffc0cb 1px, transparent 1px);
+    background-size: 15px 15px;
     opacity: 0.4;
-    z-index: -1; /* Detrás del contenido */
+    z-index: -1;
 }
 
 .calendario-container {
     background-color: #fff;
     border: 3px solid #f08080; /* Borde rojo fresa */
-    border-radius: 20px; /* Esquinas redondeadas */
+    border-radius: 20px;
     padding: 40px 30px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    position: relative; /* Para posicionar las fresas absolutas */
+    position: relative;
     width: 90%;
-    max-width: 700px; /* Ancho máximo para el calendario */
+    max-width: 700px;
     margin-bottom: 30px;
 }
 
@@ -42,11 +42,12 @@ body::before {
 .strawberry {
     width: 60px;
     height: 70px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23e91e63" d="M50 0C25 0 0 25 0 50s25 50 50 50 50-25 50-50S75 0 50 0z"/><path fill="%234caf50" d="M50 0c-5 0-10 10-10 10s-5 10-5 10 0 10 5 10 10-10 10-10 5-10 5-10 0-10-5-10z"/><circle cx="35" cy="40" r="3" fill="%23fff"/><circle cx="65" cy="40" r="3" fill="%23fff"/><circle cx="50" cy="60" r="3" fill="%23fff"/><circle cx="40" cy="75" r="3" fill="%23fff"/><circle cx="60" cy="75" r="3" fill="%23fff"/></svg>'); /* SVG de una fresa */
+    /* SVG de una fresa: puedes cambiarlo por tu propia imagen de fresa si lo prefieres */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23e91e63" d="M50 0C25 0 0 25 0 50s25 50 50 50 50-25 50-50S75 0 50 0z"/><path fill="%234caf50" d="M50 0c-5 0-10 10-10 10s-5 10-5 10 0 10 5 10 10-10 10-10 5-10 5-10 0-10-5-10z"/><circle cx="35" cy="40" r="3" fill="%23fff"/><circle cx="65" cy="40" r="3" fill="%23fff"/><circle cx="50" cy="60" r="3" fill="%23fff"/><circle cx="40" cy="75" r="3" fill="%23fff"/><circle cx="60" cy="75" r="3" fill="%23fff"/></svg>');
     background-size: contain;
     background-repeat: no-repeat;
     position: absolute;
-    z-index: 1; /* Para que estén por encima del contenedor si es necesario */
+    z-index: 1;
 }
 
 .strawberry.strawberry-top-left { top: -20px; left: -20px; transform: rotate(-15deg); }
@@ -54,86 +55,115 @@ body::before {
 .strawberry.strawberry-top-center-right.small { top: -10px; right: 20%; width: 40px; height: 45px; transform: rotate(25deg); }
 .strawberry.strawberry-top-right { top: -15px; right: -25px; transform: rotate(10deg); }
 
+/* Contenedor del título del mes y botones de navegación */
+.month-navigation-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -20px auto 30px auto; /* Ajuste para superponer un poco las fresas */
+    width: 100%;
+}
+
 /* Banderín del mes */
 .month-banner {
     background-color: #ffc0cb; /* Rosa claro de fresa */
     border: 2px solid #e91e63; /* Borde rosa más oscuro */
     border-radius: 10px;
     padding: 10px 20px;
-    margin: -20px auto 30px auto; /* Ajuste para superponer un poco las fresas */
-    display: inline-block; /* Para que el fondo solo abarque el texto */
+    display: inline-block;
     font-size: 1.8em;
     font-weight: bold;
     color: #e91e63;
     position: relative;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-grow: 1; /* Permite que el banderín ocupe el espacio disponible */
+    text-align: center; /* Centra el texto dentro del banderín */
 }
 
 /* Forma ondulada del banderín (pseudoelementos) */
 .month-banner::before, .month-banner::after {
     content: '';
     position: absolute;
-    width: 20px; /* Ancho de la onda */
-    height: 10px; /* Altura de la onda */
+    width: 20px;
+    height: 10px;
     background-color: #ffc0cb;
     border: 2px solid #e91e63;
     border-top: none;
     border-radius: 0 0 100% 100% / 0 0 50% 50%;
-    bottom: -10px; /* Para que esté debajo del banner */
+    bottom: -10px;
 }
-.month-banner::before {
-    left: 10%; /* Posiciona la primera onda */
+.month-banner::before { left: 10%; }
+.month-banner::after { right: 10%; }
+
+/* Botones de navegación */
+.nav-button {
+    background-color: #f7e1e1; /* Rosa muy claro */
+    border: 2px solid #e91e63;
+    border-radius: 50%; /* Botones redondos */
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
+    color: #e91e63;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-weight: bold;
 }
-.month-banner::after {
-    right: 10%; /* Posiciona la segunda onda */
+
+.nav-button:hover {
+    background-color: #ffe0f0;
+    transform: scale(1.1);
 }
 
 /* Tabla del calendario */
 .calendar-grid-wrapper {
     width: 100%;
-    overflow-x: auto; /* Para tablas grandes en pantallas pequeñas */
+    overflow-x: auto;
 }
 
 #tabla-calendario {
     width: 100%;
-    border-collapse: separate; /* Para que border-spacing funcione */
-    border-spacing: 5px; /* Espacio entre las celdas */
+    border-collapse: separate;
+    border-spacing: 5px;
     margin: 0 auto;
 }
 
 #tabla-calendario th {
-    background-color: #f7e1e1; /* Rosa muy claro */
-    color: #e91e63; /* Rosa oscuro para días de la semana */
+    background-color: #f7e1e1;
+    color: #e91e63;
     padding: 10px;
-    border-radius: 8px; /* Bordes redondeados para encabezados */
+    border-radius: 8px;
     font-weight: bold;
     font-size: 1.1em;
 }
 
 #tabla-calendario td {
-    background-color: #fff; /* Fondo blanco para las celdas */
-    border: 2px solid #ffb6c1; /* Borde rosa suave */
-    border-radius: 10px; /* Bordes redondeados */
-    padding: 15px 5px; /* Espacio interno */
-    min-width: 80px; /* Ancho mínimo para las celdas */
-    height: 80px; /* Altura fija para celdas */
-    vertical-align: top; /* Alinear el contenido a la parte superior */
-    text-align: left; /* Alinear el número de día a la izquierda/superior */
-    position: relative; /* Para posicionar el indicador de nota */
+    background-color: #fff;
+    border: 2px solid #ffb6c1;
+    border-radius: 10px;
+    padding: 15px 5px;
+    min-width: 80px;
+    height: 80px;
+    vertical-align: top;
+    text-align: left;
+    position: relative;
     cursor: pointer;
     transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Sombra ligera */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 #tabla-calendario td:empty {
-    background-color: #fff0f5; /* Color ligeramente diferente para celdas vacías */
+    background-color: #fff0f5;
     border-color: #fce4ec;
     cursor: default;
     box-shadow: none;
 }
 
 #tabla-calendario td:not(:empty):hover {
-    transform: translateY(-3px); /* Efecto al pasar el ratón */
+    transform: translateY(-3px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -142,7 +172,7 @@ body::before {
     font-size: 1.2em;
     font-weight: bold;
     color: #888;
-    position: absolute; /* Para posicionar el número de día */
+    position: absolute;
     top: 5px;
     left: 8px;
 }
@@ -175,12 +205,11 @@ body::before {
     font-weight: bold;
 }
 
-
 /* Cinta decorativa inferior izquierda */
 .decorative-tape {
     width: 60px;
     height: 20px;
-    background-color: #ffc0cb; /* Mismo rosa que el banderín */
+    background-color: #ffc0cb;
     border: 1px solid #e91e63;
     border-radius: 5px;
     position: absolute;
@@ -193,11 +222,11 @@ body::before {
 /* Sección de notas del día */
 .dia-info {
     background-color: #fff;
-    border: 2px dashed #f08080; /* Borde punteado de fresa */
+    border: 2px dashed #f08080;
     border-radius: 12px;
     padding: 25px;
     width: 90%;
-    max-width: 600px; /* Ancho máximo para la sección de notas */
+    max-width: 600px;
     margin-top: 30px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     text-align: left;
@@ -212,14 +241,14 @@ body::before {
 }
 
 .dia-info textarea {
-    width: calc(100% - 20px); /* Ajuste por el padding */
+    width: calc(100% - 20px);
     min-height: 120px;
     padding: 10px;
     box-sizing: border-box;
     font-family: inherit;
     font-size: 1em;
-    border: 1px solid #ffb6c1; /* Borde rosa suave */
+    border: 1px solid #ffb6c1;
     border-radius: 8px;
-    background-color: #fffafa; /* Fondo ligeramente rosado */
-    resize: vertical; /* Permitir redimensionar solo verticalmente */
+    background-color: #fffafa;
+    resize: vertical;
 }
