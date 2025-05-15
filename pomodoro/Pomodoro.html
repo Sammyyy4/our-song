@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Lindo con To-Do</title>
+    <link rel="stylesheet" href="pomodoro-lindo.css">
+</head>
+<body>
+    <div class="pomodoro-container">
+        <h1>🌸 Pomodoro Focus 🌸</h1>
+
+        <div class="timer">
+            <div id="tiempo-restante">25:00</div>
+            <div id="estado">¡A enfocar!</div>
+        </div>
+
+        <div class="controls">
+            <button id="iniciar">🚀 Iniciar</button>
+            <button id="pausar">⏸️ Pausar</button>
+            <button id="resetear">🔄️ Resetear</button>
+        </div>
+
+        <div class="settings">
+            <div>
+                <label for="trabajo-tiempo">Trabajo:</label>
+                <input type="number" id="trabajo-tiempo" value="25" min="1"> min
+            </div>
+            <div>
+                <label for="descanso-corto">Descanso:</label>
+                <input type="number" id="descanso-corto" value="5" min="1"> min
+            </div>
+        </div>
+
+        <div class="todo-list">
+            <h2>📝 Tareas por Hacer</h2>
+            <div class="add-task">
+                <input type="text" id="nueva-tarea" placeholder="Añadir una nueva tarea">
+                <button id="agregar-tarea">+</button>
+            </div>
+            <ul id="lista-tareas">
+                </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tiempoRestanteDisplay = document.getElementById('tiempo-restante');
+            const estadoDisplay = document.getElementById('estado');
+            const iniciarBtn = document.getElementById('iniciar');
+            const pausarBtn = document.getElementById('pausar');
+            const resetearBtn = document.getElementById('resetear');
+            const trabajoTiempoInput = document.getElementById('trabajo-tiempo');
+            const descansoCortoInput = document.getElementById('descanso-corto');
+            const nuevaTareaInput = document.getElementById('nueva-tarea');
+            const agregarTareaBtn = document.getElementById('agregar-tarea');
+            const listaTareasUl = document.getElementById('lista-tareas');
+
+            let tiempoTrabajo = parseInt(trabajoTiempoInput.value) * 60;
+            let tiempoDescanso = parseInt(descansoCortoInput.value) * 60;
+            let tiempoActual = tiempoTrabajo;
+            let enTrabajo = true;
+            let temporizadorActivo = false;
+            let intervalo;
+            let tareas = cargarTareas();
+
+            mostrarTiempo(tiempoActual);
+            renderizarTareas();
+
+            function mostrarTiempo(segundos) {
+                const minutos = Math.floor(segundos / 60).toString().padStart(2, '0');
+                const segundosRestantes = (segundos % 60).toString().padStart(2, '0');
+                tiempoRestanteDisplay.textContent = `${minutos}:${segundosRestantes}`;
+            }
+
+            function iniciarTemporizador() {
+                if (temporizadorActivo) return;
+                temporizadorActivo = true;
+                estadoDisplay.textContent = enTrabajo ? '¡A trabajar! ⏳' : '¡A descansar! ☕';
+                intervalo = setInterval(() => {
+                    tiempoActual--;
+                    mostrarTiempo(tiempoActual);
+                    if (tiempoActual <= 0) {
+                        clearInterval(intervalo);
+                        temporizadorActivo = false;
+                        enTrabajo = !enTrabajo;
+                        tiempoActual = enTrabajo ? tiempoTrabajo : tiempoDescanso;
+                        estadoDisplay.textContent = enTrabajo ? '¡Tiempo de trabajo! 🚀' : '¡Tiempo de descanso! ☕';
+                        mostrarTiempo(tiempoActual);
+                        if (enTrabajo) {
+                            // Puedes añadir una notificación o sonido aquí
+                            alert('¡Tiempo de trabajo!');
+                        } else {
+                            alert('¡Tiempo de descanso!');
+                        }
+                    }
+                }, 1000);
+            }
+
+            function pausarTemporizador() {
+                clearInterval(intervalo);
+                temporizadorActivo = false;
+                estadoDisplay.textContent = 'Pausado ⏸️';
+            }
+
+            function resetearTemporizador() {
+                clearInterval(intervalo);
+                temporizadorActivo = false;
+                enTrabajo = true;
+                tiempoTrabajo = parseInt(trabajoTiempoInput.value) * 60;
+                tiempoDescanso = parseInt(descansoCortoInput.value) * 60;
+                tiempoActual = tiempoTrabajo;
+                mostrarTiempo(tiempoActual);
+                estadoDisplay.textContent = '¡Listo! ✨';
+            }
+
+            iniciarBtn.addEventListener('click', iniciarTemporizador);
+            pausarBtn.addEventListener('click', pausarTemporizador);
+            resetearBtn.addEventListener('click', resetearTemporizador);
+
+            trabajoTiempoInput.addEventListener('change', resetearTemporizador);
+            descansoCortoInput.addEventListener('change', resetearTemporizador);
+
+            agregarTareaBtn.addEventListener('click', agregarNuevaTarea);
+            nuevaTareaInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    agregarNuevaTarea();
+                }
+            });
+
+            function agregarNuevaTarea() {
+                const textoTarea = nuevaTareaInput.value.trim();
+                if (textoTarea) {
+                    tareas.push({ texto: textoTarea, completada: false });
+                    guardarTareas();
+                    renderizarTareas();
+                    nuevaTareaInput.value = '';
+                }
+            }
+
+            function renderizarTareas() {
+                listaTareasUl.innerHTML = '';
+                tareas.forEach((tarea, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <input type="checkbox" data-index="${index}" ${tarea.completada ? 'checked' : ''}>
+                        <span>${tarea.texto}</span>
+                        <button class="eliminar-tarea" data-index="${index}">🗑️</button>
+                    `;
+                    listaTareasUl.appendChild(li);
+                });
+                agregarEventListenersTareas();
+            }
+
+            function agregarEventListenersTareas() {
+                const checkboxes = document.querySelectorAll('#lista-tareas input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const index = parseInt(this.dataset.index);
+                        tareas[index].completada = this.checked;
+                        guardarTareas();
+                        renderizarTareas(); // Para actualizar visualmente si es necesario
+                    });
+                });
+
+                const botonesEliminar = document.querySelectorAll('.eliminar-tarea');
+                botonesEliminar.forEach(boton => {
+                    boton.addEventListener('click', function() {
+                        const index = parseInt(this.dataset.index);
+                        tareas.splice(index, 1);
+                        guardarTareas();
+                        renderizarTareas();
+                    });
+                });
+            }
+
+            function guardarTareas() {
+                localStorage.setItem('pomodoroTareas', JSON.stringify(tareas));
+            }
+
+            function cargarTareas() {
+                const tareasGuardadas = localStorage.getItem('pomodoroTareas');
+                return tareasGuardadas ? JSON.parse(tareasGuardadas) : [];
+            }
+        });
+    </script>
+</body>
+</html>

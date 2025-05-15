@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas Post-it</title>
+    <link rel="stylesheet" href="notas.css">
+</head>
+<body>
+    <h1>Mis Notas</h1>
+    <div class="contenedor-notas">
+        </div>
+    <button id="agregar-nota">Agregar Nueva Nota</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const agregarNotaBtn = document.getElementById('agregar-nota');
+            const contenedorNotas = document.querySelector('.contenedor-notas');
+
+            agregarNotaBtn.addEventListener('click', crearNuevaNota);
+
+            function crearNuevaNota() {
+                const nuevaNota = document.createElement('div');
+                nuevaNota.classList.add('nota');
+
+                const tituloNota = document.createElement('div');
+                tituloNota.classList.add('titulo-nota');
+                tituloNota.textContent = 'Nueva Nota';
+
+                const textArea = document.createElement('textarea');
+                textArea.placeholder = 'Escribe tu nota aquí...';
+
+                nuevaNota.appendChild(tituloNota);
+                nuevaNota.appendChild(textArea);
+                contenedorNotas.appendChild(nuevaNota);
+            }
+        });
+    </script>
+</body>
+</html>

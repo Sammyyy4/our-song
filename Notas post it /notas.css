@@ -1,0 +1,66 @@
+body {
+    font-family: sans-serif;
+    background-color: #f9f5e7; /* Un color similar al papel */
+    display: flex;
+    flex-direction: column; /* Para ordenar los elementos verticalmente */
+    align-items: center; /* Centra los elementos horizontalmente */
+    justify-content: flex-start; /* Alinea los elementos al inicio verticalmente (puedes cambiar a center si prefieres) */
+    min-height: 100vh; /* Asegura que el body ocupe al menos toda la altura de la ventana */
+    margin: 0; /* Elimina los márgenes predeterminados del body */
+    padding-top: 20px; /* Añade un poco de espacio en la parte superior si es necesario */
+}
+
+h1 {
+    text-align: center; /* Asegura que el título esté centrado */
+    margin-bottom: 20px; /* Espacio debajo del título */
+}
+
+.contenedor-notas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center; /* Centra las notas horizontalmente dentro del contenedor */
+    margin-bottom: 20px;
+    /* Si quieres que el contenedor en sí esté centrado (ya lo estará por el body),
+       puedes agregar un ancho máximo si es necesario para controlar su tamaño. */
+    /* max-width: 80%; */
+}
+
+.nota {
+    background-color: #fffacd; /* Amarillo pálido (típico Post-it) */
+    width: 200px;
+    min-height: 150px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-nota {
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+    color: #333;
+}
+
+.nota textarea {
+    flex-grow: 1;
+    border: none;
+    padding: 5px;
+    font-family: inherit;
+    font-size: 1em;
+    resize: none; /* Evita que se redimensionen */
+    background-color: transparent;
+}
+
+#agregar-nota {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #d4ac0d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    /* El body con align-items: center ya debería centrar el botón horizontalmente */
+}

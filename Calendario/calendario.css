@@ -1,0 +1,55 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+.calendario-mes {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    text-align: center;
+}
+
+.calendario-mes h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.calendario-mes table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calendario-mes th,
+.calendario-mes td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.calendario-mes th {
+    background-color: #eee;
+    font-weight: bold;
+}
+
+.calendario-mes td {
+    min-width: 50px;
+    min-height: 50px;
+    cursor: text; /* Indica que se puede interactuar */
+}
+
+.calendario-mes td:empty {
+    background-color: #f9f9f9; /* Para celdas vacías */
+    border-color: #eee;
+}
+
+.calendario-mes td:focus {
+    outline: 2px solid #007bff; /* Estilo al enfocar la celda */
+}

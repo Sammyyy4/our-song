@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Referencias de Libros</title>
+    <link rel="stylesheet" href="libros-referencias.css">
+</head>
+<body>
+    <h1>📚 Mis Referencias de Libros 📚</h1>
+
+    <div class="agregar-libro">
+        <h2>Añadir un Nuevo Libro</h2>
+        <form id="formulario-libro">
+            <div>
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" required>
+            </div>
+            <div>
+                <label for="autor">Autor:</label>
+                <input type="text" id="autor">
+            </div>
+            <div>
+                <label for="imagen">Portada:</label>
+                <input type="file" id="imagen" accept="image/*">
+            </div>
+            <div>
+                <label for="estrellas">Calificación:</label>
+                <div class="calificacion">
+                    <span class="estrella" data-valor="1">☆</span>
+                    <span class="estrella" data-valor="2">☆</span>
+                    <span class="estrella" data-valor="3">☆</span>
+                    <span class="estrella" data-valor="4">☆</span>
+                    <span class="estrella" data-valor="5">☆</span>
+                    <input type="hidden" id="calificacion-valor" value="0">
+                </div>
+            </div>
+            <div>
+                <label for="comentarios">Comentarios:</label>
+                <textarea id="comentarios" rows="4"></textarea>
+            </div>
+            <button type="submit">Guardar Referencia</button>
+        </form>
+    </div>
+
+    <div class="referencias-libros">
+        <h2>Mis Libros Referenciados</h2>
+        <div id="lista-referencias">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const formularioLibro = document.getElementById('formulario-libro');
+            const listaReferencias = document.getElementById('lista-referencias');
+            const estrellas = document.querySelectorAll('.estrella');
+            const calificacionValorInput = document.getElementById('calificacion-valor');
+            let librosReferenciados = cargarLibros();
+
+            mostrarReferencias();
+
+            formularioLibro.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const titulo = document.getElementById('titulo').value;
+                const autor = document.getElementById('autor').value;
+                const imagenInput = document.getElementById('imagen');
+                const calificacion = parseInt(calificacionValorInput.value);
+                const comentarios = document.getElementById('comentarios').value;
+                const imagenArchivo = imagenInput.files[0];
+
+                if (titulo) {
+                    let nuevaReferencia = { titulo: titulo, autor: autor, calificacion: calificacion, comentarios: comentarios };
+                    if (imagenArchivo) {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            nuevaReferencia.imagenBase64 = reader.result;
+                            librosReferenciados.push(nuevaReferencia);
+                            guardarLibros();
+                            mostrarReferencias();
+                            formularioLibro.reset();
+                            resetearEstrellas();
+                        }
+                        reader.readAsDataURL(imagenArchivo);
+                    } else {
+                        librosReferenciados.push(nuevaReferencia);
+                        guardarLibros();
+                        mostrarReferencias();
+                        formularioLibro.reset();
+                        resetearEstrellas();
+                    }
+                } else {
+                    alert('El título del libro es obligatorio.');
+                }
+            });
+
+            estrellas.forEach(estrella => {
+                estrella.addEventListener('click', function() {
+                    const valor = parseInt(this.dataset.valor);
+                    calificacionValorInput.value = valor;
+                    resaltarEstrellas(valor);
+                });
+                estrella.addEventListener('mouseover', function() {
+                    resaltarEstrellas(parseInt(this.dataset.valor));
+                });
+                estrella.addEventListener('mouseout', function() {
+                    resaltarEstrellas(parseInt(calificacionValorInput.value));
+                });
+            });
+
+            function resaltarEstrellas(valor) {
+                estrellas.forEach(estrella => {
+                    estrella.textContent = parseInt(estrella.dataset.valor) <= valor ? '★' : '☆';
+                });
+            }
+
+            function mostrarReferencias() {
+                listaReferencias.innerHTML = '';
+                if (librosReferenciados.length === 0) {
+                    listaReferencias.innerHTML = '<p>Aún no has añadido ninguna referencia de libro.</p>';
+                    return;
+                }
+                librosReferenciados.forEach(libro => {
+                    const referenciaDiv = document.createElement('div');
+                    referenciaDiv.classList.add('referencia-libro');
+                    let estrellasHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        estrellasHTML += i <= libro.calificacion ? '★' : '☆';
+                    }
+                    referenciaDiv.innerHTML = `
+                        <h3>${libro.titulo}</h3>
+                        ${libro.autor ? `<p>Autor: ${libro.autor}</p>` : ''}
+                        ${libro.imagenBase64 ? `<img src="${libro.imagenBase64}" alt="Portada de ${libro.titulo}" style="max-width: 150px; height: auto;">` : ''}
+                        <p>Calificación: <span class="calificacion-mostrada">${estrellasHTML}</span></p>
+                        ${libro.comentarios ? `<p>Comentarios: ${libro.comentarios}</p>` : ''}
+                    `;
+                    listaReferencias.appendChild(referenciaDiv);
+                });
+            }
+
+            function guardarLibros() {
+                localStorage.setItem('librosReferenciados', JSON.stringify(librosReferenciados));
+            }
+
+            function cargarLibros() {
+                const librosGuardados = localStorage.getItem('librosReferenciados');
+                return librosGuardados ? JSON.parse(librosGuardados) : [];
+            }
+
+            function resetearEstrellas() {
+                calificacionValorInput.value = 0;
+                resaltarEstrellas(0);
+            }
+        });
+    </script>
+</body>
+</html>

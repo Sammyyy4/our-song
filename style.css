@@ -1,0 +1,36 @@
+body {
+    font-family: Press 2 star;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+.contenedor-botones {
+    display: flex;
+    gap: 20px; /* Espacio entre los botones */
+}
+
+.boton-con-imagen {
+    text-align: center;
+}
+
+.boton-con-imagen img {
+    max-width: 100px; /* Ajusta el tamaño de la imagen */
+    height: auto;
+    display: block; /* Evita espacio extra debajo de la imagen */
+    margin-bottom: 5px; /* Espacio entre la imagen y el botón */
+}
+
+.boton-con-imagen button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.boton-con-imagen a {
+    text-decoration: none; /* Elimina el subrayado del enlace */
+    color: inherit; /* Hereda el color del texto del botón */
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario Mensual</title>
+    <link rel="stylesheet" href="calendario-mes.css">
+    <style>
+        .calendario-navegacion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .calendario-navegacion button {
+            font-size: 1.2em;
+            padding: 8px 15px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+        }
+        #mes-anio-actual {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .dia-info {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .dia-info h3 {
+            margin-top: 0;
+        }
+        .dia-info textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendario-container">
+        <div class="calendario-navegacion">
+            <button id="anterior-mes">&lt;</button>
+            <h2 id="mes-anio-actual">Mayo 2025</h2>
+            <button id="siguiente-mes">&gt;</button>
+        </div>
+        <table id="tabla-calendario">
+            <thead>
+                <tr>
+                    <th>Dom</th>
+                    <th>Lun</th>
+                    <th>Mar</th>
+                    <th>Mié</th>
+                    <th>Jue</th>
+                    <th>Vie</th>
+                    <th>Sáb</th>
+                </tr>
+            </thead>
+            <tbody id="dias-calendario">
+                </tbody>
+        </table>
+
+        <div class="dia-info">
+            <h3 id="dia-seleccionado"></h3>
+            <textarea id="nota-dia" placeholder="Escribe aquí tu nota para este día"></textarea>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mesAnioActual = document.getElementById('mes-anio-actual');
+            const tablaCalendario = document.getElementById('dias-calendario');
+            const anteriorMesBtn = document.getElementById('anterior-mes');
+            const siguienteMesBtn = document.getElementById('siguiente-mes');
+            const diaSeleccionadoTitulo = document.getElementById('dia-seleccionado');
+            const notaDiaTextarea = document.getElementById('nota-dia');
+
+            let fechaActual = new Date();
+
+            function mostrarCalendario(anio, mes) {
+                fechaActual.setFullYear(anio, mes, 1);
+                mesAnioActual.textContent = obtenerNombreMes(mes) + ' ' + anio;
+                tablaCalendario.innerHTML = '';
+
+                const primerDia = new Date(anio, mes, 1);
+                const ultimoDia = new Date(anio, mes + 1, 0);
+                const diasEnMes = ultimoDia.getDate();
+                const diaSemanaPrimerDia = primerDia.getDay();
+
+                let diaActual = 1;
+                for (let i = 0; i < 6; i++) {
+                    const fila = document.createElement('tr');
+                    for (let j = 0; j < 7; j++) {
+                        const celda = document.createElement('td');
+                        if (i === 0 && j < diaSemanaPrimerDia) {
+                            celda.textContent = '';
+                        } else if (diaActual <= diasEnMes) {
+                            celda.textContent = diaActual;
+                            celda.dataset.dia = diaActual;
+                            celda.addEventListener('click', function() {
+                                const dia = this.dataset.dia;
+                                diaSeleccionadoTitulo.textContent = `Nota para el ${dia} de ${obtenerNombreMes(fechaActual.getMonth())} de ${fechaActual.getFullYear()}`;
+                                // Aquí podrías cargar la nota existente para este día si la hubiera
+                                notaDiaTextarea.value = localStorage.getItem(`nota-${fechaActual.getFullYear()}-${fechaActual.getMonth()}-${dia}`) || '';
+                            });
+                            diaActual++;
+                        } else {
+                            celda.textContent = '';
+                        }
+                        fila.appendChild(celda);
+                    }
+                    tablaCalendario.appendChild(fila);
+                    if (diaActual > diasEnMes) {
+                        break;
+                    }
+                }
+            }
+
+            function obtenerNombreMes(mes) {
+                const nombres = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+                return nombres[mes];
+            }
+
+            anteriorMesBtn.addEventListener('click', function() {
+                fechaActual.setMonth(fechaActual.getMonth() - 1);
+                mostrarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
+            });
+
+            siguienteMesBtn.addEventListener('click', function() {
+                fechaActual.setMonth(fechaActual.getMonth() + 1);
+                mostrarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
+            });
+
+            notaDiaTextarea.addEventListener('blur', function() {
+                const diaSeleccionado = diaSeleccionadoTitulo.textContent.split(' ')[3];
+                if (diaSeleccionado) {
+                    localStorage.setItem(`nota-${fechaActual.getFullYear()}-${fechaActual.getMonth()}-${diaSeleccionado}`, this.value);
+                }
+            });
+
+            // Mostrar el mes actual al cargar la página
+            mostrarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
+        });
+    </script>
+</body>
+</html>
