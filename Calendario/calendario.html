@@ -46,6 +46,13 @@
     <div class="dia-info">
         <h3 id="dia-seleccionado-titulo">Selecciona un día</h3>
         <textarea id="nota-dia" placeholder="Escribe aquí tu nota para este día..."></textarea>
+
+        <div class="fecha-picker-container">
+            <label for="seleccionar-fecha">O selecciona una fecha específica:</label>
+            <input type="text" id="seleccionar-fecha" readonly placeholder="Click para seleccionar">
+            <div id="datepicker" class="datepicker-hidden">
+                </div>
+        </div>
     </div>
 
     <script>
@@ -57,7 +64,12 @@
             const anteriorMesBtn = document.getElementById('anterior-mes');
             const siguienteMesBtn = document.getElementById('siguiente-mes');
 
-            let fechaActual = new Date(); // Inicia con la fecha actual del sistema
+            // Elementos del Date Picker
+            const seleccionarFechaInput = document.getElementById('seleccionar-fecha');
+            const datepickerDiv = document.getElementById('datepicker');
+            let currentPickerDate = new Date(); // Fecha actual para el datepicker
+
+            let fechaActual = new Date(); // Fecha actual del calendario principal
 
             function generarCalendario(anio, mes) {
                 // Actualiza la fechaActual para reflejar el mes/año que se está mostrando
@@ -143,13 +155,13 @@
                 return nombres[mes];
             }
 
-            // Event listener para el botón de mes anterior
+            // Event listener para el botón de mes anterior (calendario principal)
             anteriorMesBtn.addEventListener('click', function() {
                 fechaActual.setMonth(fechaActual.getMonth() - 1);
                 generarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
             });
 
-            // Event listener para el botón de mes siguiente
+            // Event listener para el botón de mes siguiente (calendario principal)
             siguienteMesBtn.addEventListener('click', function() {
                 fechaActual.setMonth(fechaActual.getMonth() + 1);
                 generarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
@@ -175,8 +187,119 @@
                 }
             });
 
-            // Generar el calendario inicial
+            // Generar el calendario principal inicialmente
             generarCalendario(fechaActual.getFullYear(), fechaActual.getMonth());
+
+
+            // --- Lógica del Date Picker ---
+
+            seleccionarFechaInput.addEventListener('click', function() {
+                datepickerDiv.classList.toggle('datepicker-hidden'); // Muestra/oculta el datepicker
+                // Asegúrate de que el datepicker muestre el mes de la fecha actual seleccionada si la hay
+                if (seleccionarFechaInput.value) {
+                    const parts = seleccionarFechaInput.value.split('/');
+                    currentPickerDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                } else {
+                    currentPickerDate = new Date(); // O la fecha actual
+                }
+                renderDatePicker(currentPickerDate.getFullYear(), currentPickerDate.getMonth());
+            });
+
+            // Ocultar el datepicker si se hace clic fuera
+            document.addEventListener('click', function(event) {
+                if (!datepickerDiv.contains(event.target) && event.target !== seleccionarFechaInput) {
+                    datepickerDiv.classList.add('datepicker-hidden');
+                }
+            });
+
+            function renderDatePicker(anio, mes) {
+                datepickerDiv.innerHTML = ''; // Limpiar contenido anterior
+
+                const pickerNav = document.createElement('div');
+                pickerNav.classList.add('picker-nav');
+                pickerNav.innerHTML = `
+                    <button class="picker-nav-btn" data-action="prev">&lt;</button>
+                    <span class="picker-month-year">${obtenerNombreMes(mes)} ${anio}</span>
+                    <button class="picker-nav-btn" data-action="next">&gt;</button>
+                `;
+                datepickerDiv.appendChild(pickerNav);
+
+                const pickerTable = document.createElement('table');
+                pickerTable.classList.add('picker-table');
+                pickerTable.innerHTML = `
+                    <thead>
+                        <tr><th>D</th><th>L</th><th>M</th><th>M</th><th>J</th><th>V</th><th>S</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                `;
+                datepickerDiv.appendChild(pickerTable);
+
+                const pickerBody = pickerTable.querySelector('tbody');
+
+                const primerDiaDelMes = new Date(anio, mes, 1);
+                const ultimoDiaDelMes = new Date(anio, mes + 1, 0);
+                const totalDiasEnMes = ultimoDiaDelMes.getDate();
+                const diaSemanaPrimerDia = primerDiaDelMes.getDay();
+
+                let dia = 1;
+                for (let i = 0; i < 6; i++) {
+                    const fila = document.createElement('tr');
+                    for (let j = 0; j < 7; j++) {
+                        const celda = document.createElement('td');
+                        if (i === 0 && j < diaSemanaPrimerDia) {
+                            celda.textContent = '';
+                        } else if (dia <= totalDiasEnMes) {
+                            celda.textContent = dia;
+                            celda.dataset.dia = dia;
+                            celda.dataset.mes = mes;
+                            celda.dataset.anio = anio;
+                            celda.classList.add('picker-day');
+
+                            // Marcar día actual en el picker
+                            const hoy = new Date();
+                            if (dia === hoy.getDate() && mes === hoy.getMonth() && anio === hoy.getFullYear()) {
+                                celda.classList.add('picker-today');
+                            }
+
+                            // Marcar el día seleccionado en el input si coincide
+                            if (seleccionarFechaInput.value) {
+                                const selectedParts = seleccionarFechaInput.value.split('/');
+                                if (parseInt(celda.dataset.dia) === parseInt(selectedParts[0]) &&
+                                    parseInt(celda.dataset.mes) === (parseInt(selectedParts[1]) - 1) && // Meses 0-indexed
+                                    parseInt(celda.dataset.anio) === parseInt(selectedParts[2])) {
+                                    celda.classList.add('picker-selected');
+                                }
+                            }
+
+                            celda.addEventListener('click', function() {
+                                const selDia = this.dataset.dia;
+                                const selMes = parseInt(this.dataset.mes);
+                                const selAnio = this.dataset.anio;
+                                seleccionarFechaInput.value = `${selDia}/${selMes + 1}/${selAnio}`; // Formato dd/mm/yyyy
+                                datepickerDiv.classList.add('datepicker-hidden'); // Ocultar después de seleccionar
+                                // También podemos hacer que el calendario principal salte a esta fecha
+                                generarCalendario(parseInt(selAnio), selMes);
+                            });
+                            dia++;
+                        } else {
+                            celda.textContent = '';
+                        }
+                        fila.appendChild(celda);
+                    }
+                    pickerBody.appendChild(fila);
+                    if (dia > totalDiasEnMes) break;
+                }
+
+                // Eventos de navegación del picker
+                pickerNav.querySelector('[data-action="prev"]').addEventListener('click', function() {
+                    currentPickerDate.setMonth(currentPickerDate.getMonth() - 1);
+                    renderDatePicker(currentPickerDate.getFullYear(), currentPickerDate.getMonth());
+                });
+                pickerNav.querySelector('[data-action="next"]').addEventListener('click', function() {
+                    currentPickerDate.setMonth(currentPickerDate.getMonth() + 1);
+                    renderDatePicker(currentPickerDate.getFullYear(), currentPickerDate.getMonth());
+                });
+            }
         });
     </script>
 </body>
