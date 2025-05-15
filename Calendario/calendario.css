@@ -1,55 +1,113 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Roboto', sans-serif; /* Una fuente moderna y legible */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #f4f4f4;
     margin: 0;
 }
 
-.calendario-mes {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 20px;
+.calendario-container {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px;
     text-align: center;
+    width: 90%;
+    max-width: 600px;
 }
 
-.calendario-mes h2 {
-    margin-top: 0;
-    margin-bottom: 15px;
+.calendario-navegacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.calendario-navegacion button {
+    font-size: 1.5em;
+    padding: 8px 15px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.calendario-navegacion button:hover {
+    color: #3f51b5; /* Un azul agradable */
+}
+
+#mes-anio-actual {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #3f51b5;
+}
+
+#tabla-calendario {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#tabla-calendario th,
+#tabla-calendario td {
+    padding: 12px;
+    text-align: center;
+    border-radius: 6px;
+}
+
+#tabla-calendario th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+    color: #555;
+}
+
+#tabla-calendario td {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+#tabla-calendario td:hover {
+    background-color: #f5f5f5;
     color: #333;
 }
 
-.calendario-mes table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.calendario-mes th,
-.calendario-mes td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-.calendario-mes th {
-    background-color: #eee;
+#tabla-calendario td.dia-actual {
+    background-color: #3f51b5;
+    color: white;
     font-weight: bold;
 }
 
-.calendario-mes td {
-    min-width: 50px;
-    min-height: 50px;
-    cursor: text; /* Indica que se puede interactuar */
+#tabla-calendario td.fin-de-semana {
+    background-color: #f9f9f9;
+    color: #777;
 }
 
-.calendario-mes td:empty {
-    background-color: #f9f9f9; /* Para celdas vacías */
-    border-color: #eee;
+.dia-info {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: left;
 }
 
-.calendario-mes td:focus {
-    outline: 2px solid #007bff; /* Estilo al enfocar la celda */
+.dia-info h3 {
+    color: #3f51b5;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.dia-info textarea {
+    width: calc(100% - 16px);
+    min-height: 100px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: inherit;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
 }
